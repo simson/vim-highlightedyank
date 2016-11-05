@@ -30,89 +30,88 @@ endfunction
 "}}}
 "}}}
 " testset "{{{
-let s:testset = {}
-let s:testset.normalmode = [
+" NOTE: %s in keyseq is replaced to register assignment.
+let s:testset = [
       \   {
-      \     'keyseq': 'yiw',
+      \     'keyseq': '%syiw',
       \     'yanked': "foo",
       \     'foo': 1,
       \     'bar': 0,
       \     'baz': 0,
       \   },
       \   {
-      \     'keyseq': 'y3e',
+      \     'keyseq': '%sy3e',
       \     'yanked': "foo\nbar\nbaz",
       \     'foo': 1,
       \     'bar': 1,
       \     'baz': 1,
       \   },
       \   {
-      \     'keyseq': 'yy',
+      \     'keyseq': '%syy',
       \     'yanked': "foo\n",
       \     'foo': 1,
       \     'bar': 0,
       \     'baz': 0,
       \   },
       \   {
-      \     'keyseq': 'yj',
+      \     'keyseq': '%syj',
       \     'yanked': "foo\nbar\n",
       \     'foo': 1,
       \     'bar': 1,
       \     'baz': 0,
       \   },
       \   {
-      \     'keyseq': "y\<C-v>iw",
+      \     'keyseq': "%sy\<C-v>iw",
       \     'yanked': "foo",
       \     'foo': 1,
       \     'bar': 0,
       \     'baz': 0,
       \   },
       \   {
-      \     'keyseq': "y\<C-v>3e",
+      \     'keyseq': "%sy\<C-v>3e",
       \     'yanked': "foo\nbar\nbaz",
       \     'foo': 1,
       \     'bar': 1,
       \     'baz': 1,
       \   },
-      \ ]
-let s:testset.visualmode = [
+      \
       \   {
-      \     'keyseq': 'viwy',
+      \     'keyseq': 'viw%sy',
       \     'yanked': "foo",
       \     'foo': 1,
       \     'bar': 0,
       \     'baz': 0,
       \   },
       \   {
-      \     'keyseq': 'v3ey',
+      \     'keyseq': 'v3e%sy',
       \     'yanked': "foo\nbar\nbaz",
       \     'foo': 1,
       \     'bar': 1,
       \     'baz': 1,
       \   },
       \   {
-      \     'keyseq': 'Vy',
+      \     'keyseq': 'V%sy',
       \     'yanked': "foo\n",
       \     'foo': 1,
       \     'bar': 0,
       \     'baz': 0,
       \   },
       \   {
-      \     'keyseq': 'Vjy',
+      \     'keyseq': 'Vj%sy',
       \     'yanked': "foo\nbar\n",
       \     'foo': 1,
       \     'bar': 1,
       \     'baz': 0,
       \   },
       \   {
-      \     'keyseq': "\<C-v>iwy",
+      \     'keyseq': "\<C-v>iw%sy",
       \     'yanked': "foo",
       \     'foo': 1,
       \     'bar': 0,
       \     'baz': 0,
       \   },
       \   {
-      \     'keyseq': "\<C-v>3ey",
+      \     'keyseq': "\<C-v>3e%sy",
       \     'yanked': "foo\nbar\nbaz",
       \     'foo': 1,
       \     'bar': 1,
@@ -329,11 +328,11 @@ map y <Plug>(highlightedyank)
 call append(0, ['foo', 'bar', 'baz'])
 
 for s:register in s:register_table
-  for s:test in s:testset.normalmode
+  for s:test in s:testset
     let &clipboard = s:register.clipboard
     let [@0, @", @*, @+, @a] = ['', '', '', '', '']
 
-    let s:keyseq = s:register.keyseq . s:test.keyseq
+    let s:keyseq = printf(s:test.keyseq, s:register.keyseq)
     call feedkeys('gg' . s:keyseq, 'tx')
     call s:assert(@0, s:register['@0'] ? s:test.yanked : '', printf('keyseq: %s (clipboard: "%s") %s', s:keyseq, s:register.clipboard, printf('-> @0: "%s"', @0)))
     call s:assert(@", s:register['@"'] ? s:test.yanked : '', printf('keyseq: %s (clipboard: "%s") %s', s:keyseq, s:register.clipboard, printf('-> @": "%s"', @")))
