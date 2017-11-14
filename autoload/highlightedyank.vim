@@ -356,14 +356,13 @@ function! s:motionwise2visualmode(motionwise) abort "{{{
 endfunction
 "}}}
 
-" for neovim
 function! highlightedyank#autocmd_highlight() abort "{{{
-  if v:event.operator !=# 'y' || v:event.regtype ==# ''
+  if v:operator !=# 'y' || getregtype() ==# ''
     return
   endif
 
   let view = winsaveview()
-  let region = s:derive_region(v:event.regtype, v:event.regcontents)
+  let region = s:derive_region(getregtype(), getreg(v:register))
   call s:modify_region(region)
   call s:highlight_yanked_region(region)
   call winrestview(view)
